@@ -23,7 +23,7 @@ class DeleteTask(BaseModel):
 
 class Task(TaskBase):
     id: int
-    executor_id: int
+    executor: str
 
     class Config:
         orm_mode = True

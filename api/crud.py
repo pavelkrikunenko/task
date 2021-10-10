@@ -41,7 +41,8 @@ def authenticate_user(db, login: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict,
+                        expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -52,7 +53,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme),
+                           db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail='Could not validate credentials',
@@ -95,7 +97,9 @@ def create_user(db: Session, user: schemas.CreateUser):
     return db_user
 
 
-def create_task(db: Session, task: schemas.CreateTask, executor_id: int):
+def create_task(db: Session,
+                task: schemas.CreateTask,
+                executor_id: int):
     db_task = models.Task(
         title=task.title,
         description=task.description,
@@ -120,12 +124,15 @@ def get_tasks(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Task).offset(skip).limit(limit).all()
 
 
-def get_tasks_by_user(db: Session, user: schemas.User = Depends(get_current_user)):
+def get_tasks_by_user(db: Session,
+                      user: schemas.User = Depends(get_current_user)):
     db_user = db.query(models.User).filter(models.User.login == user.login).first()
     return db.query(models.Task).filter(models.Task.executor_id == db_user.id).all()
 
 
-def update_task(db: Session, task: schemas.UpdateTask, user: schemas.User = Depends(get_current_user)):
+def update_task(db: Session,
+                task: schemas.UpdateTask,
+                user: schemas.User = Depends(get_current_user)):
     db_user = get_user(db=db, login=user.login)
     db_task = db.query(models.Task).filter(models.Task.id == task.id).first()
     if db_user.id == db_task.executor_id:
@@ -137,7 +144,9 @@ def update_task(db: Session, task: schemas.UpdateTask, user: schemas.User = Depe
     raise HTTPException(status_code=400, detail='You are not executor for this task')
 
 
-def delete_task(db: Session, task: schemas.DeleteTask, user: schemas.User = Depends(get_current_user)):
+def delete_task(db: Session,
+                task: schemas.DeleteTask,
+                user: schemas.User = Depends(get_current_user)):
     db_user = get_user(db=db, login=user.login)
     db_task = db.query(models.Task).filter(models.Task.id == task.id).first()
 

@@ -13,7 +13,6 @@ class User(Base):
     tasks = relationship('Task', backref='executor', cascade='all, delete-orphan')
 
 
-
 class Task(Base):
     __tablename__ = 'tasks'
     id = Column(Integer, primary_key=True, index=True)
